@@ -1,9 +1,8 @@
 # r2pq-crypto
 
-Reference crypto backends for the R2PQ suite.
+Reference crypto shim(s) for the R2PQ suite. This repo compiles standalone and registers a
+signature/verifier with `r2pq-sdk` at init time.
 
-- ✅ Buildable shim backend (ed25519) used only for wiring/tests
-- 🔌 Registers itself with `r2pq-sdk` on import
-- 🧪 `go test ./...` passes on fresh clone
-
-> Real PQ algos (Kyber/Dilithium/etc.) will drop in later behind the same interfaces.
+## Layout
+- `shim/` — ed25519-based placeholder shim (drop-in PQ backends later)
+- `.github/workflows/ci.yml` — Go build + test
