@@ -1,24 +1,23 @@
 package shim
 
-import (
-	"testing"
-)
+import "testing"
 
-func TestSignVerify(t *testing.T) {
+func TestRoundTrip(t *testing.T) {
 	s, err := newSigner()
 	if err != nil {
-		t.Fatalf("newSigner error: %v", err)
+		t.Fatal(err)
+	}
+	v, err := newVerifier()
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	msg := []byte("hello R2PQ")
+	msg := []byte("r2pq")
 	sig, err := s.Sign(msg)
 	if err != nil {
-		t.Fatalf("sign error: %v", err)
+		t.Fatal(err)
 	}
-
-	v := verifier{}
-	ok := v.Verify(s.Public(), msg, sig)
-	if !ok {
-		t.Fatalf("verify failed")
+	if !v.Verify(s.PublicKeyHex(), msg, sig) {
+		t.Fatal("verify failed")
 	}
 }
