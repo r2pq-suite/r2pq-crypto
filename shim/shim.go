@@ -3,23 +3,25 @@ package shim
 import (
 	"crypto/ed25519"
 	"crypto/rand"
-	"encoding/hex"
 
 	sdk "github.com/r2pq-suite/r2pq-sdk"
 )
 
-// signer implements the sdk.Signer expected by r2pq-sdk.
+// signer implements sdk.Signer
 type signer struct {
 	pri ed25519.PrivateKey
 	pub ed25519.PublicKey
 }
 
-// verifier implements the sdk.Verifier expected by r2pq-sdk.
+// verifier implements sdk.Verifier
 type verifier struct{}
 
 func init() {
-	// Make this backend discoverable by the SDK as a placeholder "PQ" algo.
-	// (The constant name lives in r2pq-sdk; this keeps the coupling minimal.)
+	// Register this shim with the SDK under a placeholder algo name.
+	// Use whatever constant/alias your SDK exposes. Example:
+	//   sdk.Register(sdk.AlgoShimSig, newSigner, newVerifier)
+	// If your SDK exposes a string name instead, do:
+	//   sdk.RegisterByName("shim-ed25519", newSigner, newVerifier)
 	sdk.Register(sdk.AlgoShimSig, newSigner, newVerifier)
 }
 
@@ -31,26 +33,15 @@ func newSigner() (sdk.Signer, error) {
 	return &signer{pri: pri, pub: pub}, nil
 }
 
-func newVerifier() (sdk.Verifier, error) {
-	return &verifier{}, nil
-}
-
-// --- sdk.Signer ---
-
-func (s *signer) PublicKeyHex() string {
-	return hex.EncodeToString(s.pub)
-}
+func (s *signer) PublicKey() []byte { return s.pub }
 
 func (s *signer) Sign(msg []byte) ([]byte, error) {
-	return ed25519.Sign(s.pri, msg), nil
+	sig := ed25519.Sign(s.pri, msg)
+	return sig, nil
 }
 
-// --- sdk.Verifier ---
+func newVerifier() (sdk.Verifier, error) { return &verifier{}, nil }
 
-func (v *verifier) Verify(pubHex string, msg, sig []byte) bool {
-	pubBytes, err := hex.DecodeString(pubHex)
-	if err != nil {
-		return false
-	}
-	return ed25519.Verify(ed25519.PublicKey(pubBytes), msg, sig)
+func (v *verifier) Verify(pub, msg, sig []byte) bool {
+	return ed25519.Verify(ed25519.PublicKey(pub), msg, sig)
 }
