@@ -36,7 +36,7 @@ func (s *signer) Public() sdk.PublicKey {
 }
 
 func (s *signer) Address() sdk.Address {
-	return sdk.Address(hex.EncodeToString(s.pub))
+	return sdk.Address(hex.EncodeToString(s.pub[:]))
 }
 
 func (s *signer) Sign(msg []byte) (sdk.Signature, error) {
@@ -44,9 +44,7 @@ func (s *signer) Sign(msg []byte) (sdk.Signature, error) {
 	return sdk.Signature(sig), nil
 }
 
-// ---------------------
-// Verifier implementation
-// ---------------------
+// Verifier
 
 func (verifier) Algorithm() sdk.Algorithm {
 	return sdk.AlgoShimSig
