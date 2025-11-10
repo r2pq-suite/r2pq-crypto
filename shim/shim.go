@@ -27,31 +27,19 @@ func newSigner() (sdk.Signer, error) {
 	return &signer{pri: pri, pub: pub}, nil
 }
 
-func (s *signer) Algorithm() sdk.Algorithm {
-	return sdk.AlgoShimSig
-}
-
-func (s *signer) Public() sdk.PublicKey {
-	return sdk.PublicKey(s.pub)
-}
-
-func (s *signer) Address() sdk.Address {
-	return sdk.Address(hex.EncodeToString(s.pub[:]))
-}
+func (s *signer) Algorithm() sdk.Algorithm { return sdk.AlgoShimSig }
+func (s *signer) Public() sdk.PublicKey    { return sdk.PublicKey(s.pub) }
+func (s *signer) Address() sdk.Address     { return sdk.Address(hex.EncodeToString(s.pub)) }
 
 func (s *signer) Sign(msg []byte) (sdk.Signature, error) {
 	sig := ed25519.Sign(s.pri, msg)
 	return sdk.Signature(sig), nil
 }
 
-// Verifier
-
-func (verifier) Algorithm() sdk.Algorithm {
-	return sdk.AlgoShimSig
-}
+func (verifier) Algorithm() sdk.Algorithm { return sdk.AlgoShimSig }
 
 func (verifier) Verify(pub sdk.PublicKey, msg []byte, sig sdk.Signature) bool {
-	return ed25519.Verify(ed25519.PublicKey(pub), msg, sig)
+	return ed25519.Verify(ed25519.PublicKey(pub), msg, ed25519.Signature(sig))
 }
 
 func (verifier) AddressFrom(pub sdk.PublicKey) sdk.Address {
