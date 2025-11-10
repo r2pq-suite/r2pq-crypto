@@ -3,5 +3,5 @@ package shim
 import "testing"
 
 func TestSmoke(t *testing.T) {
-	// Smoke test: build path and init() registration
+	// Nothing to assert; just ensure package builds/links in CI.
 }
